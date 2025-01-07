@@ -1,33 +1,12 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { getSliceStoreProducts } from "@/lib/slice";
 
-import { createSearchParamsCache, parseAsString } from "nuqs/server";
-import { validate as uuidValidate } from "uuid";
-
-import type { Params } from "@/types/request-params";
-import { getSliceStores } from "@/lib/slice";
-
-const paramsCache = createSearchParamsCache({
-  userId: parseAsString.withDefault(""),
-});
-
-export async function GET(
-  req: NextRequest,
-  props: { params: Promise<Params> }
-): Promise<Response> {
-  const { userId } = await paramsCache.parse(props.params);
-  if (!userId || !uuidValidate(userId)) {
-    return new NextResponse(undefined, {
-      status: 400,
-      headers: {
-        "Cache-Control": "no-store",
-      },
-    });
-  }
+export async function GET(): Promise<Response> {
   try {
-    const stores = await getSliceStores();
+    const { cartProducts } = await getSliceStoreProducts(undefined, true);
+    console.log("cartProducts", cartProducts);
 
-    if (!stores) {
-      return new NextResponse(undefined, {
+    if (!cartProducts) {
+      return new Response(undefined, {
         status: 404,
         headers: {
           "Cache-Control": "no-store",
@@ -35,18 +14,16 @@ export async function GET(
       });
     }
 
-    return new NextResponse(JSON.stringify({ status: "ok", data: stores }), {
-      status: 200,
-      headers: {
-        "Cache-Control": "public, max-age=86400, immutable",
-        "Content-Type": "application/json",
-        "Content-Length": JSON.stringify({ data: stores }).length.toString(),
-      },
-    });
+    return Response.json(
+      { status: "ok", data: cartProducts },
+      {
+        status: 200,
+      }
+    );
   } catch (error) {
     console.error(error);
-    return new NextResponse(
-      JSON.stringify({ status: "nok", error: "Internal server error" }),
+    return Response.json(
+      { status: "nok", error: "Internal server error" },
       {
         status: 500,
         headers: {

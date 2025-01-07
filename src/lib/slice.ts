@@ -1,4 +1,5 @@
 import { env } from "@/lib/env";
+import type { Config as WagmiConfig } from "@wagmi/core";
 import { config as wagmiConfig } from "@/lib/wagmi";
 
 import { getStores, getStoreProducts, getOrders } from "@slicekit/core";
@@ -17,11 +18,14 @@ async function getSliceStoreProducts(
   buyer: `0x${string}` | undefined,
   isOnsite: boolean | undefined
 ) {
-  const { cartProducts, storeClosed } = await getStoreProducts(wagmiConfig, {
-    slicerId: env.SLICE_STORE_ID,
-    buyer: buyer, // Address of the buyer, used to determine eventual discounts. If not provided, base prices are returned.
-    isOnsite: isOnsite,
-  });
+  const { cartProducts, storeClosed } = await getStoreProducts(
+    wagmiConfig as WagmiConfig,
+    {
+      slicerId: env.SLICE_STORE_ID,
+      buyer: buyer, // Address of the buyer, used to determine eventual discounts. If not provided, base prices are returned.
+      isOnsite: isOnsite,
+    }
+  );
 
   return { cartProducts, storeClosed };
 }

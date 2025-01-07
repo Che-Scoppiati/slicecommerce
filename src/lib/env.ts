@@ -4,6 +4,7 @@ import z from "zod";
 dotenv.config();
 
 const envSchema = z.object({
+  NEXT_PUBLIC_URL: z.string().url(),
   SLICE_STORE_ID: z.coerce.number().min(1),
   THEGRAPH_API_KEY: z.string().optional(),
 });
