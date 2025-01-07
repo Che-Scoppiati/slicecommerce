@@ -3,6 +3,8 @@ import { config as wagmiConfig } from "@/lib/wagmi";
 
 import { getStores, getStoreProducts, getOrders } from "@slicekit/core";
 
+// @slicekit/core Documentation reference: https://docs.slice.so/core/getting-started
+
 async function getSliceStores() {
   const stores = await getStores({
     slicerIds: [env.SLICE_STORE_ID],
@@ -26,14 +28,15 @@ async function getSliceStoreProducts(
 
 async function getSliceStoreOrders(
   buyer: `0x${string}`,
-  signature: `0x${string}`
+  signature: string | undefined,
+  first: number | undefined
 ) {
   const orders = await getOrders({
     buyer,
     signature,
     slicerId: env.SLICE_STORE_ID,
     thegraphApiKey: env.THEGRAPH_API_KEY,
-    first: 10,
+    first,
   });
 
   return orders;
