@@ -1,5 +1,8 @@
 "use client";
 
+import Link from "next/link";
+import Image from "next/image";
+
 import { useEffect, useCallback, useState, useMemo } from "react";
 import { signIn, signOut, getCsrfToken } from "next-auth/react";
 import sdk, {
@@ -33,9 +36,7 @@ import { Label } from "@/components/ui/label";
 import { truncateAddress } from "@/lib/truncate-address";
 import { ProductCart } from "@slicekit/core";
 
-export default function Demo(
-  { title }: { title?: string } = { title: "Frames v2 Demo" }
-) {
+export default function Demo() {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
   const [context, setContext] = useState<Context.FrameContext>();
   const [isContextOpen, setIsContextOpen] = useState(false);
@@ -50,7 +51,8 @@ export default function Demo(
   const [addFrameResult, setAddFrameResult] = useState("");
   const [sendNotificationResult, setSendNotificationResult] = useState("");
 
-  const [products] = useState<ProductCart[]>([]);
+  const [products, setProducts] = useState<ProductCart[]>([]);
+  const [isProductsLoading, setIsProductsLoading] = useState(false);
 
   useEffect(() => {
     setNotificationDetails(context?.client.notificationDetails ?? null);
@@ -262,21 +264,21 @@ export default function Demo(
   }, []);
 
   // TODO: fix this
-  // const fetchProducts = useCallback(async () => {
-  //   setIsProductsLoading(true);
-  //   try {
-  //     const response = await fetch("/api/slice");
-  //     const data = await response.json();
-  //     console.log("data", data);
-  //     setProducts(data);
-  //   } finally {
-  //     setIsProductsLoading(false);
-  //   }
-  // }, [setIsProductsLoading, setProducts]);
+  const fetchProducts = useCallback(async () => {
+    setIsProductsLoading(true);
+    try {
+      const response = await fetch("/api/slice");
+      const data = await response.json();
+      console.log("frame products data", data);
+      setProducts(data.data);
+    } finally {
+      setIsProductsLoading(false);
+    }
+  }, [setIsProductsLoading, setProducts]);
 
-  // useEffect(() => {
-  //   fetchProducts();
-  // }, [fetchProducts]);
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   if (!isSDKLoaded) {
     return <div>Loading...</div>;
@@ -291,8 +293,99 @@ export default function Demo(
         paddingRight: context?.client.safeAreaInsets?.right ?? 0,
       }}
     >
+      <div className="flex flex-row justify-between w-full mb-4 px-2 py-4">
+        <Link href="/" className="text-lg font-bold">
+          {products?.[0]?.slicerName || "Shop name"}
+        </Link>
+        {context?.user ? (
+          context.user.pfpUrl ? (
+            <div className="flex flex-row items-center gap-2">
+              <Image
+                src={context?.user.pfpUrl || "/icon.png"}
+                width={32}
+                height={32}
+                alt={`${context?.user.username} profile picture`}
+                className="rounded-full"
+              />
+              <p className="text-lg font-bold">{context?.user.username}</p>
+            </div>
+          ) : (
+            <div className="flex flex-row items-center justify-center gap-2 rounded-full bg-zinc-800 text-white text-xs pt-1 w-[32px] h-[32px]">
+              <p>{(context?.user.username || "W").toUpperCase().slice(0, 2)}</p>
+            </div>
+          )
+        ) : (
+          <div className="flex flex-row justify-center items-center gap-2 rounded-full bg-zinc-800 text-white text-xs pt-1 w-[32px] h-[32px]">
+            <p>{"W".toUpperCase()}</p>
+          </div>
+        )}
+      </div>
+
+      <div className="flex flex-row justify-between w-full mb-4 px-2 py-4">
+        {products.map((product) => (
+          <div
+            className="flex flex-col justify-left items-center gap-2 px-2"
+            key={product.dbId}
+          >
+            <div className="flex flex-row items-center gap-2">
+              <Image
+                src={product.images[0]}
+                width={1080}
+                height={1920}
+                alt="Slice logo"
+              />
+            </div>
+            <div className="flex flex-col justify-left w-full gap-2">
+              <h2 className="text-xl font-bold">{product.name}</h2>
+              <h1 className="text-2xl font-bold border border-slate-500 rounded-md p-2 w-fit">
+                {Number(product.price) / 10 ** (product.currency.decimals || 6)}{" "}
+                {product.currency.symbol}
+              </h1>
+              <h2 className="text-xl justify-left font-bold">Variants</h2>
+              <div className="flex flex-row justify-left w-full gap-2 mt-10">
+                {product.externalProduct?.providerVariants.map((variant) => (
+                  <div
+                    className="flex flex-col justify-left gap-2 p-2 items-center justify-center border border-slate-500 rounded-md"
+                    key={variant.id}
+                  >
+                    <h1 className="text-2xl font-bold">{variant.variant}</h1>
+                  </div>
+                ))}
+              </div>
+              <div className="flex flex-col justify-left w-full gap-2">
+                <h2 className="text-xl justify-left font-bold">Description</h2>
+                {product.description.split("\n").map((line, index) => (
+                  <p className="text-sm" key={`line-${index}`}>
+                    {line}
+                  </p>
+                ))}
+              </div>
+              {products
+                .filter((p) => p.dbId !== product.dbId)
+                .map((p) => (
+                  <div
+                    className="flex flex-col justify-left w-full gap-2"
+                    key={p.dbId}
+                  >
+                    <h2 className="text-xl justify-left font-bold">
+                      Other products
+                    </h2>
+                    {p.description.split("\n").map((line, index) => (
+                      <p className="text-sm" key={`line-${index}`}>
+                        {line}
+                      </p>
+                    ))}
+                  </div>
+                ))}
+            </div>
+          </div>
+        ))}
+      </div>
       <div className="w-[300px] mx-auto py-2 px-2">
-        <h1 className="text-2xl font-bold text-center mb-4">{title}</h1>
+        <span>
+          Nr of products:
+          {isProductsLoading ? " Loading..." : ` ${products.length}`}
+        </span>
 
         <div className="mb-4">
           <h2 className="font-2xl font-bold">Context</h2>
@@ -310,8 +403,6 @@ export default function Demo(
             Tap to expand
           </button>
 
-          <span>Nr of products: {products.length}</span>
-
           {isContextOpen && (
             <div className="p-4 mt-2 bg-gray-100 dark:bg-gray-800 rounded-lg">
               <pre className="font-mono text-xs whitespace-pre-wrap break-words max-w-[260px] overflow-x-">
@@ -320,7 +411,6 @@ export default function Demo(
             </div>
           )}
         </div>
-
         <div>
           <h2 className="font-2xl font-bold">Actions</h2>
 
@@ -369,7 +459,6 @@ export default function Demo(
             <Button onClick={close}>Close Frame</Button>
           </div>
         </div>
-
         <div className="mb-4">
           <h2 className="font-2xl font-bold">Last event</h2>
 
@@ -379,7 +468,6 @@ export default function Demo(
             </pre>
           </div>
         </div>
-
         <div>
           <h2 className="font-2xl font-bold">Add to client & notifications</h2>
 
@@ -418,7 +506,6 @@ export default function Demo(
             </Button>
           </div>
         </div>
-
         <div>
           <h2 className="font-2xl font-bold">Wallet</h2>
 

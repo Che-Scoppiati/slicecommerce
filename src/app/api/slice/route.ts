@@ -2,8 +2,7 @@ import { getSliceStoreProducts } from "@/lib/slice";
 
 export async function GET(): Promise<Response> {
   try {
-    const { cartProducts } = await getSliceStoreProducts(undefined, true);
-    console.log("cartProducts", cartProducts);
+    const { cartProducts } = await getSliceStoreProducts(undefined, undefined);
 
     if (!cartProducts) {
       return new Response(undefined, {
@@ -13,7 +12,6 @@ export async function GET(): Promise<Response> {
         },
       });
     }
-
     return Response.json(
       { status: "ok", data: cartProducts },
       {
