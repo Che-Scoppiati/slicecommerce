@@ -36,11 +36,11 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1(@types/react@19.0.3)(react@19.0.0)
       '@slicekit/core':
-        specifier: 0.4.20-beta.21
-        version: 0.4.20-beta.21(@wagmi/core@2.16.3(@tanstack/query-core@5.62.16)(@types/react@19.0.3)(react@19.0.0)(typescript@5.7.2)(use-sync-external-store@1.2.0(react@19.0.0))(viem@2.22.3(bufferutil@4.0.9)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.24.1)))(ethers@5.7.2(bufferutil@4.0.9)(utf-8-validate@5.0.10))(merkletreejs@0.4.1)(viem@2.22.3(bufferutil@4.0.9)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.24.1))
+        specifier: 0.4.19
+        version: 0.4.19(@wagmi/core@2.16.3(@tanstack/query-core@5.62.16)(@types/react@19.0.3)(react@19.0.0)(typescript@5.7.2)(use-sync-external-store@1.2.0(react@19.0.0))(viem@2.22.3(bufferutil@4.0.9)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.24.1)))(ethers@5.7.2(bufferutil@4.0.9)(utf-8-validate@5.0.10))(merkletreejs@0.4.1)(viem@2.22.3(bufferutil@4.0.9)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.24.1))
       '@slicekit/react':
-        specifier: 0.2.76-beta.1
-        version: 0.2.76-beta.1(@wagmi/core@2.16.3(@tanstack/query-core@5.62.16)(@types/react@19.0.3)(react@19.0.0)(typescript@5.7.2)(use-sync-external-store@1.2.0(react@19.0.0))(viem@2.22.3(bufferutil@4.0.9)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.24.1)))(bufferutil@4.0.9)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(utf-8-validate@5.0.10)(viem@2.22.3(bufferutil@4.0.9)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.24.1))
+        specifier: 0.2.76
+        version: 0.2.76(@wagmi/core@2.16.3(@tanstack/query-core@5.62.16)(@types/react@19.0.3)(react@19.0.0)(typescript@5.7.2)(use-sync-external-store@1.2.0(react@19.0.0))(viem@2.22.3(bufferutil@4.0.9)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.24.1)))(bufferutil@4.0.9)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(utf-8-validate@5.0.10)(viem@2.22.3(bufferutil@4.0.9)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.24.1))
       '@tanstack/react-query':
         specifier: ^5.62.16
         version: 5.62.16(react@19.0.0)
@@ -921,16 +921,16 @@ packages:
       merkletreejs: 0.4.0
       viem: ^2.17.0
 
-  '@slicekit/core@0.4.20-beta.21':
-    resolution: {integrity: sha512-v2LRquS4fcikz2AANOBHi+yh6nZNn6OZt39+i9/FiFp7a71/H9dsFLT4swD58p8d7ybMs5pabFBNrCovL6LxkQ==}
+  '@slicekit/core@0.4.19':
+    resolution: {integrity: sha512-H3dmxlZ4G/ntXoN7EhA7foTzxNJsr+lWgV/g4BhLL52AGqFfNI5qHrRKE2yCgrAnjPWVpxKnwwCqlfvjUrn00w==}
     peerDependencies:
       '@wagmi/core': ^2.10.9
       ethers: ^5.7.2
       merkletreejs: 0.4.0
       viem: ^2.17.0
 
-  '@slicekit/react@0.2.76-beta.1':
-    resolution: {integrity: sha512-M8be6hAZrI7yA566RsYa3Q8AGPmZiz5CxWf7TSu4BMkmRo26Htr0rBbjQmvq2eOQA9Hx2/ByYYt+e8nsBHreAg==}
+  '@slicekit/react@0.2.76':
+    resolution: {integrity: sha512-MLEEWDVfM8O3eILcF4C8CqV3H2YS8pala7NRiVgEfRS4t2pKiLOdun17OAMMFzoFj2egM8GH7FgyM0vma7/pew==}
     peerDependencies:
       '@wagmi/core': ^2.10.9
       react: ^18.2.0
@@ -4530,7 +4530,7 @@ snapshots:
       merkletreejs: 0.3.11
       viem: 2.22.3(bufferutil@4.0.9)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.24.1)
 
-  '@slicekit/core@0.4.20-beta.21(@wagmi/core@2.16.3(@tanstack/query-core@5.62.16)(@types/react@19.0.3)(react@19.0.0)(typescript@5.7.2)(use-sync-external-store@1.2.0(react@19.0.0))(viem@2.22.3(bufferutil@4.0.9)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.24.1)))(ethers@5.7.2(bufferutil@4.0.9)(utf-8-validate@5.0.10))(merkletreejs@0.4.1)(viem@2.22.3(bufferutil@4.0.9)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.24.1))':
+  '@slicekit/core@0.4.19(@wagmi/core@2.16.3(@tanstack/query-core@5.62.16)(@types/react@19.0.3)(react@19.0.0)(typescript@5.7.2)(use-sync-external-store@1.2.0(react@19.0.0))(viem@2.22.3(bufferutil@4.0.9)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.24.1)))(ethers@5.7.2(bufferutil@4.0.9)(utf-8-validate@5.0.10))(merkletreejs@0.4.1)(viem@2.22.3(bufferutil@4.0.9)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.24.1))':
     dependencies:
       '@slicekit/abi': 0.0.16
       '@wagmi/core': 2.16.3(@tanstack/query-core@5.62.16)(@types/react@19.0.3)(react@19.0.0)(typescript@5.7.2)(use-sync-external-store@1.2.0(react@19.0.0))(viem@2.22.3(bufferutil@4.0.9)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.24.1))
@@ -4538,7 +4538,7 @@ snapshots:
       merkletreejs: 0.4.1
       viem: 2.22.3(bufferutil@4.0.9)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.24.1)
 
-  '@slicekit/react@0.2.76-beta.1(@wagmi/core@2.16.3(@tanstack/query-core@5.62.16)(@types/react@19.0.3)(react@19.0.0)(typescript@5.7.2)(use-sync-external-store@1.2.0(react@19.0.0))(viem@2.22.3(bufferutil@4.0.9)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.24.1)))(bufferutil@4.0.9)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(utf-8-validate@5.0.10)(viem@2.22.3(bufferutil@4.0.9)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.24.1))':
+  '@slicekit/react@0.2.76(@wagmi/core@2.16.3(@tanstack/query-core@5.62.16)(@types/react@19.0.3)(react@19.0.0)(typescript@5.7.2)(use-sync-external-store@1.2.0(react@19.0.0))(viem@2.22.3(bufferutil@4.0.9)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.24.1)))(bufferutil@4.0.9)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(utf-8-validate@5.0.10)(viem@2.22.3(bufferutil@4.0.9)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.24.1))':
     dependencies:
       '@slicekit/abi': 0.0.11
       '@slicekit/core': 0.3.95(@wagmi/core@2.16.3(@tanstack/query-core@5.62.16)(@types/react@19.0.3)(react@19.0.0)(typescript@5.7.2)(use-sync-external-store@1.2.0(react@19.0.0))(viem@2.22.3(bufferutil@4.0.9)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.24.1)))(ethers@5.7.2(bufferutil@4.0.9)(utf-8-validate@5.0.10))(merkletreejs@0.3.11)(viem@2.22.3(bufferutil@4.0.9)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.24.1))

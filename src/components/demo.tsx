@@ -16,9 +16,8 @@ import { createStore } from "mipd";
 
 import { config as wagmiConfig } from "@/lib/wagmi";
 
-// TODO fix this slice
-// import type { Config as WagmiConfig } from "@wagmi/core";
-// import { useCart, useCheckout } from "@slicekit/react";
+import type { Config as WagmiConfig } from "@wagmi/core";
+import { useCart, useCheckout } from "@slicekit/react";
 
 import {
   useAccount,
@@ -75,6 +74,9 @@ export default function Demo() {
   const [isProductsLoading, setIsProductsLoading] = useState(false);
 
   const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
+  const [localCart, setLocalCart] = useState<ProductCart[]>([]);
+
+  const [errorMsg, setErrorMsg] = useState<string>("");
 
   useEffect(() => {
     setNotificationDetails(context?.client.notificationDetails ?? null);
@@ -96,40 +98,68 @@ export default function Demo() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
 
-  // TODO fix this slice
-  // const {
-  //   cart,
-  //   addToCart,
-  //   // updateCart,
-  //   // removeFromCart,
-  //   // updateCartProductQuantity,
-  //   // updateCartProductVariant,
-  // } = useCart();
-  // const { checkout } = useCheckout(wagmiConfig as WagmiConfig, {
-  //   buyer: address,
-  // });
-  // const payForSliceProduct = useCallback(
-  //   async (productId: number) => {
-  //     if (!address) {
-  //       console.warn("no address", productId);
-  //       return;
-  //     }
-  //     addToCart({
-  //       product: {
-  //         ...products[productId],
-  //         currency: products[productId].currency.symbol || "USDC",
-  //       },
-  //       quantity: 1,
-  //     });
-  //   },
-  //   [addToCart, address, products]
-  // );
+  const {
+    cart,
+    addToCart,
+    // updateCart,
+    // removeFromCart,
+    // updateCartProductQuantity,
+    // updateCartProductVariant,
+  } = useCart();
+  const { checkout } = useCheckout(wagmiConfig as WagmiConfig, {
+    buyer: address,
+  });
 
-  // useEffect(() => {
-  //   if (cart.length > 0) {
-  //     // checkout();
-  //   }
-  // }, [checkout, cart]);
+  const addProductToCart = useCallback(
+    async (productId: number) => {
+      if (!address) return;
+      console.log("adding product to cart", productId);
+      try {
+        addToCart({
+          product: {
+            ...products[0],
+            currency: products[0].currency.symbol || "USDC",
+          },
+          quantity: 1,
+        });
+        setLocalCart([...localCart, products[0]]);
+      } catch (error) {
+        console.error("error adding to cart", error);
+        setErrorMsg(
+          "Error adding to cart" + (error instanceof Error ? error.message : "")
+        );
+      }
+    },
+    [addToCart, address, localCart, products]
+  );
+  const completeCheckout = useCallback(
+    async (productId: number) => {
+      console.log("completing checkout for product", productId);
+      try {
+        checkout();
+        setLocalCart((prev) => prev.filter((p) => p.productId !== productId));
+      } catch (error) {
+        console.error("error checking out", error);
+        setErrorMsg(
+          "Error checking out" + (error instanceof Error ? error.message : "")
+        );
+      }
+    },
+    [checkout]
+  );
+
+  useEffect(() => {
+    if (cart.length > 0) {
+      try {
+        checkout();
+      } catch (error) {
+        console.error("error checking out", error);
+        setErrorMsg(
+          "Error checking out" + (error instanceof Error ? error.message : "")
+        );
+      }
+    }
+  }, [checkout, cart]);
 
   const {
     sendTransaction,
@@ -390,6 +420,8 @@ export default function Demo() {
         )}
       </div>
 
+      <div className="text-red-500 text-lg">{errorMsg}</div>
+
       <div className="flex flex-row justify-between w-full mb-4 px-2">
         {products.map((product) => (
           <div
@@ -498,14 +530,23 @@ export default function Demo() {
               <Button
                 className="w-fit max-w-md bg-blue-500 hover:bg-blue-600 text-white text-lg font-bold px-8 py-6 rounded-xl shadow-lg"
                 onClick={() => {
-                  // TODO fix this slice
-                  // payForSliceProduct(product.dbId);
-                  console.log("buy", product.dbId);
+                  if (localCart.find((p) => p.productId === product.dbId)) {
+                    completeCheckout(product.dbId);
+                  } else {
+                    addProductToCart(product.dbId);
+                  }
                 }}
+                disabled={
+                  !selectedVariant &&
+                  (product.externalProduct?.providerVariants || []).length > 0
+                }
               >
-                Buy{" "}
-                {Number(product.price) / 10 ** (product.currency.decimals || 6)}{" "}
-                {product.currency.symbol}
+                {!selectedVariant &&
+                (product.externalProduct?.providerVariants || []).length > 0
+                  ? "Select a variant"
+                  : localCart.find((p) => p.productId === product.dbId)
+                  ? "Checkout"
+                  : "Add to cart"}
               </Button>
             </div>
           </div>
