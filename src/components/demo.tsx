@@ -50,6 +50,7 @@ import {
 
 import { truncateAddress } from "@/lib/truncate-address";
 import { ProductCart } from "@slicekit/core";
+import { cn } from "@/lib/utils";
 
 export default function Demo() {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
@@ -72,6 +73,8 @@ export default function Demo() {
 
   const [products, setProducts] = useState<ProductCart[]>([]);
   const [isProductsLoading, setIsProductsLoading] = useState(false);
+
+  const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
 
   useEffect(() => {
     setNotificationDetails(context?.client.notificationDetails ?? null);
@@ -433,21 +436,37 @@ export default function Demo() {
                   alt="Base logo"
                 />
               </div>
-              <div className="flex flex-col justify-left w-full gap-2">
-                <h2 className="text-xl justify-left font-bold">Variants</h2>
-                <div className="flex flex-row justify-left w-full gap-2">
-                  {product.externalProduct?.providerVariants.map((variant) => (
-                    <div
-                      className="flex flex-col justify-center items-center gap-2 p-2 rounded-md border border-slate-500"
-                      key={variant.id}
-                    >
-                      <h1 className="text-xl text-center font-bold">
-                        {variant.variant}
-                      </h1>
-                    </div>
-                  ))}
+              <div className="w-full max-w-md mx-auto pb-2">
+                <h2 className="text-lg font-semibold mb-2">Select Variant</h2>
+                <div className="relative">
+                  <div className="flex overflow-x-auto -mx-2 px-2 scrollbar-hide">
+                    {product.externalProduct?.providerVariants.map(
+                      (variant) => (
+                        <button
+                          key={variant.id}
+                          onClick={() => setSelectedVariant(variant.variant)}
+                          className={cn(
+                            "flex-shrink-0 h-10 px-4 mr-2 text-sm text-black rounded-full border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
+                            selectedVariant === variant.variant
+                              ? "bg-blue-600 text-white border-transparent"
+                              : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"
+                          )}
+                        >
+                          {variant.variant}
+                        </button>
+                      )
+                    )}
+                  </div>
+                  <div className="absolute top-0 right-0 bottom-0 w-8 bg-gradient-to-l from-white pointer-events-none" />
                 </div>
+                {selectedVariant && (
+                  <p className="mt-4 text-sm text-gray-600">
+                    Selected variant:{" "}
+                    <span className="font-semibold">{selectedVariant}</span>
+                  </p>
+                )}
               </div>
+
               <div className="flex flex-col justify-left w-full gap-2">
                 <h2 className="text-xl justify-left font-bold">Description</h2>
                 {product.description.split("\n").map((line, index) => (
