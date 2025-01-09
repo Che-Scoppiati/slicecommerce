@@ -2,7 +2,13 @@ import { env } from "@/lib/env";
 import type { Config as WagmiConfig } from "@wagmi/core";
 import { config as wagmiConfig } from "@/lib/wagmi";
 
-import { getStores, getStoreProducts, getOrders } from "@slicekit/core";
+import {
+  getStores,
+  getStoreProducts,
+  getOrders,
+  payProducts,
+  getProduct,
+} from "@slicekit/core";
 
 // @slicekit/core Documentation reference: https://docs.slice.so/core/getting-started
 
@@ -46,4 +52,26 @@ async function getSliceStoreOrders(
   return orders;
 }
 
-export { getSliceStoreProducts, getSliceStores, getSliceStoreOrders };
+async function payForProduct(productId: number, address: `0x${string}`) {
+  const cart = await getProduct(wagmiConfig as WagmiConfig, {
+    slicerId: 2006,
+    productId,
+    buyer: address,
+  });
+  console.log("hash for productId", productId, "is", cart, "for addy", address);
+
+  const hash = await payProducts(wagmiConfig as WagmiConfig, {
+    account: address,
+    cart: [cart],
+  });
+  console.log("hash", hash);
+
+  return hash;
+}
+
+export {
+  getSliceStoreProducts,
+  getSliceStores,
+  getSliceStoreOrders,
+  payForProduct,
+};

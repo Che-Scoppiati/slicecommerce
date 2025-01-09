@@ -3,6 +3,7 @@ import { getSliceStoreProducts } from "@/lib/slice";
 export async function GET(): Promise<Response> {
   try {
     const { cartProducts } = await getSliceStoreProducts(undefined, undefined);
+    // console.log("cartProducts", cartProducts);
 
     if (!cartProducts) {
       return new Response(undefined, {

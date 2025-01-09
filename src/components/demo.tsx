@@ -32,6 +32,16 @@ import { BaseError, UserRejectedRequestError } from "viem";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { ZoomableImage } from "@/components/ui/zoomable-image";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselApi,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 import { truncateAddress } from "@/lib/truncate-address";
 import { ProductCart } from "@slicekit/core";
@@ -41,6 +51,10 @@ export default function Demo() {
   const [context, setContext] = useState<Context.FrameContext>();
   const [isContextOpen, setIsContextOpen] = useState(false);
   const [txHash, setTxHash] = useState<string | null>(null);
+
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState<number>(0);
+  const [count, setCount] = useState<number>(0);
 
   const [added, setAdded] = useState(false);
   const [notificationDetails, setNotificationDetails] =
@@ -57,6 +71,19 @@ export default function Demo() {
   useEffect(() => {
     setNotificationDetails(context?.client.notificationDetails ?? null);
   }, [context]);
+
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap() + 1);
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap() + 1);
+    });
+  }, [api]);
 
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
@@ -263,7 +290,6 @@ export default function Demo() {
     setIsContextOpen((prev) => !prev);
   }, []);
 
-  // TODO: fix this
   const fetchProducts = useCallback(async () => {
     setIsProductsLoading(true);
     try {
@@ -279,6 +305,18 @@ export default function Demo() {
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
+
+  const payForSliceProduct = useCallback(
+    async (productId: number) => {
+      if (!address) {
+        console.warn("no address", productId);
+        return;
+      }
+      const hash = null; //await payForProduct(productId, address);
+      console.log("hash", hash);
+    },
+    [address]
+  );
 
   if (!isSDKLoaded) {
     return <div>Loading...</div>;
@@ -321,36 +359,66 @@ export default function Demo() {
         )}
       </div>
 
-      <div className="flex flex-row justify-between w-full mb-4 px-2 py-4">
+      <div className="flex flex-row justify-between w-full mb-4 px-2">
         {products.map((product) => (
           <div
             className="flex flex-col justify-left items-center gap-2 px-2"
             key={product.dbId}
           >
-            <div className="flex flex-row items-center gap-2">
-              <Image
-                src={product.images[0]}
-                width={1080}
-                height={1920}
-                alt="Slice logo"
-              />
+            <div className="flex flex-col items-center gap-2 w-full mx-auto">
+              <Carousel className="w-[80%]" setApi={setApi}>
+                <CarouselContent>
+                  {product.images.map((image, index) => (
+                    <CarouselItem key={index}>
+                      <Card>
+                        <CardContent className="flex aspect-square items-center justify-center p-0">
+                          <ZoomableImage
+                            src={image}
+                            alt={`${product.name} image ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </CardContent>
+                      </Card>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+              </Carousel>
+              <div className="pt-1 text-center text-sm text-muted-foreground">
+                Image {current} of {count}
+              </div>
             </div>
             <div className="flex flex-col justify-left w-full gap-2">
               <h2 className="text-xl font-bold">{product.name}</h2>
-              <h1 className="text-2xl font-bold border border-slate-500 rounded-md p-2 w-fit">
-                {Number(product.price) / 10 ** (product.currency.decimals || 6)}{" "}
-                {product.currency.symbol}
-              </h1>
-              <h2 className="text-xl justify-left font-bold">Variants</h2>
-              <div className="flex flex-row justify-left w-full gap-2 mt-10">
-                {product.externalProduct?.providerVariants.map((variant) => (
-                  <div
-                    className="flex flex-col justify-left gap-2 p-2 items-center justify-center border border-slate-500 rounded-md"
-                    key={variant.id}
-                  >
-                    <h1 className="text-2xl font-bold">{variant.variant}</h1>
-                  </div>
-                ))}
+              <div className="flex flex-row justify-left items-center w-full gap-2">
+                <h1 className="text-2xl font-bold border border-slate-500 rounded-md p-2 w-fit bg-blue-500 text-white">
+                  {Number(product.price) /
+                    10 ** (product.currency.decimals || 6)}{" "}
+                  {product.currency.symbol}
+                </h1>
+                <span className="text-sm text-muted-foreground">on</span>
+                <Image
+                  src="/images/logo-base.png"
+                  width={24}
+                  height={24}
+                  alt="Base logo"
+                />
+              </div>
+              <div className="flex flex-col justify-left w-full gap-2">
+                <h2 className="text-xl justify-left font-bold">Variants</h2>
+                <div className="flex flex-row justify-left w-full gap-2">
+                  {product.externalProduct?.providerVariants.map((variant) => (
+                    <div
+                      className="flex flex-col justify-center items-center gap-2 p-2 rounded-md border border-slate-500"
+                      key={variant.id}
+                    >
+                      <h1 className="text-xl text-center font-bold">
+                        {variant.variant}
+                      </h1>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="flex flex-col justify-left w-full gap-2">
                 <h2 className="text-xl justify-left font-bold">Description</h2>
@@ -377,6 +445,19 @@ export default function Demo() {
                     ))}
                   </div>
                 ))}
+            </div>
+
+            <div className="fixed bottom-[50px] left-0 right-0 flex justify-center z-50">
+              <Button
+                className="w-fit max-w-md bg-blue-500 hover:bg-blue-600 text-white text-lg font-bold px-8 py-6 rounded-xl shadow-lg"
+                onClick={() => {
+                  payForSliceProduct(product.dbId);
+                }}
+              >
+                Buy{" "}
+                {Number(product.price) / 10 ** (product.currency.decimals || 6)}{" "}
+                {product.currency.symbol}
+              </Button>
             </div>
           </div>
         ))}
