@@ -19,6 +19,7 @@
     "@radix-ui/react-label": "^2.1.1",
     "@radix-ui/react-slot": "^1.1.1",
     "@slicekit/core": "0.4.20-beta.21",
+    "@slicekit/react": "0.2.76-beta.1",
     "@tanstack/react-query": "^5.62.16",
     "@upstash/redis": "^1.34.3",
     "@wagmi/core": "^2.16.3",

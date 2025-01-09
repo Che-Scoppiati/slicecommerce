@@ -14,7 +14,12 @@ import sdk, {
 import { useSession } from "next-auth/react";
 import { createStore } from "mipd";
 
-import { config } from "@/lib/wagmi";
+import { config as wagmiConfig } from "@/lib/wagmi";
+
+// TODO fix this slice
+// import type { Config as WagmiConfig } from "@wagmi/core";
+// import { useCart, useCheckout } from "@slicekit/react";
+
 import {
   useAccount,
   useSendTransaction,
@@ -87,6 +92,41 @@ export default function Demo() {
 
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
+
+  // TODO fix this slice
+  // const {
+  //   cart,
+  //   addToCart,
+  //   // updateCart,
+  //   // removeFromCart,
+  //   // updateCartProductQuantity,
+  //   // updateCartProductVariant,
+  // } = useCart();
+  // const { checkout } = useCheckout(wagmiConfig as WagmiConfig, {
+  //   buyer: address,
+  // });
+  // const payForSliceProduct = useCallback(
+  //   async (productId: number) => {
+  //     if (!address) {
+  //       console.warn("no address", productId);
+  //       return;
+  //     }
+  //     addToCart({
+  //       product: {
+  //         ...products[productId],
+  //         currency: products[productId].currency.symbol || "USDC",
+  //       },
+  //       quantity: 1,
+  //     });
+  //   },
+  //   [addToCart, address, products]
+  // );
+
+  // useEffect(() => {
+  //   if (cart.length > 0) {
+  //     // checkout();
+  //   }
+  // }, [checkout, cart]);
 
   const {
     sendTransaction,
@@ -306,18 +346,6 @@ export default function Demo() {
     fetchProducts();
   }, [fetchProducts]);
 
-  const payForSliceProduct = useCallback(
-    async (productId: number) => {
-      if (!address) {
-        console.warn("no address", productId);
-        return;
-      }
-      const hash = null; //await payForProduct(productId, address);
-      console.log("hash", hash);
-    },
-    [address]
-  );
-
   if (!isSDKLoaded) {
     return <div>Loading...</div>;
   }
@@ -451,7 +479,9 @@ export default function Demo() {
               <Button
                 className="w-fit max-w-md bg-blue-500 hover:bg-blue-600 text-white text-lg font-bold px-8 py-6 rounded-xl shadow-lg"
                 onClick={() => {
-                  payForSliceProduct(product.dbId);
+                  // TODO fix this slice
+                  // payForSliceProduct(product.dbId);
+                  console.log("buy", product.dbId);
                 }}
               >
                 Buy{" "}
@@ -607,7 +637,7 @@ export default function Demo() {
               onClick={() =>
                 isConnected
                   ? disconnect()
-                  : connect({ connector: config.connectors[0] })
+                  : connect({ connector: wagmiConfig.connectors[0] })
               }
             >
               {isConnected ? "Disconnect" : "Connect"}
@@ -689,7 +719,7 @@ function SignMessage() {
     if (!isConnected) {
       await connectAsync({
         chainId: base.id,
-        connector: config.connectors[0],
+        connector: wagmiConfig.connectors[0],
       });
     }
 
