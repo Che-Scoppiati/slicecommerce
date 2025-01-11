@@ -21,8 +21,8 @@ async function getSliceStores() {
 }
 
 async function getSliceStoreProducts(
-  buyer: `0x${string}` | undefined,
-  isOnsite: boolean | undefined
+  buyer: `0x${string}` | undefined = undefined,
+  isOnsite: boolean | undefined = undefined
 ) {
   const { cartProducts, storeClosed } = await getStoreProducts(
     wagmiConfig as WagmiConfig,
@@ -38,8 +38,8 @@ async function getSliceStoreProducts(
 
 async function getSliceStoreOrders(
   buyer: `0x${string}`,
-  signature: string | undefined,
-  first: number | undefined
+  signature: string | undefined = undefined,
+  first: number | undefined = undefined
 ) {
   const orders = await getOrders({
     buyer,
@@ -54,7 +54,7 @@ async function getSliceStoreOrders(
 
 async function payForProduct(productId: number, address: `0x${string}`) {
   const cart = await getProduct(wagmiConfig as WagmiConfig, {
-    slicerId: 2006,
+    slicerId: env.SLICE_STORE_ID,
     productId,
     buyer: address,
   });
