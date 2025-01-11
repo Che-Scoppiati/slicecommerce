@@ -11,7 +11,7 @@ export const ProductPrice: React.FC<ProductPriceProps> = ({
 
   return (
     <div className="flex flex-row justify-left items-center w-full gap-2">
-      <h1 className="text-2xl font-bold border border-slate-500 rounded-md p-2 w-fit bg-blue-500 text-white">
+      <h1 className="text-2xl font-bold border border-slate-500 rounded-md py-2 px-3 w-fit bg-blue-500 text-white leading-none">
         {Number(product.price) /
           10 ** (product.currency.decimals || 6)}{" "}
         {product.currency.symbol}

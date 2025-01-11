@@ -5,18 +5,12 @@ import sdk, {
   type Context,
 } from "@farcaster/frame-sdk";
 import { createStore } from "mipd";
-
 import { config as wagmiConfig } from "@/lib/wagmi";
-
-import type { Config as WagmiConfig } from "@wagmi/core";
 import { useCart, useCheckout } from "@slicekit/react";
-
 import {
   useAccount,
 } from "wagmi";
-
 import { Button } from "@/components/ui/button";
-
 import { ProductCart } from "@slicekit/core";
 import { ProductCarousel } from "./product/product-carousel";
 import { ProductVariants } from "./product/product-variants";
@@ -30,7 +24,7 @@ export default function Demo() {
   const [product, setProduct] = useState<ProductCart>();
   const [, setIsProductsLoading] = useState(false);
 
-  const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
+  const [selectedVariant, setSelectedVariant] = useState<number | null>(null);
   const [localCart, setLocalCart] = useState<ProductCart[]>([]);
 
   const [errorMsg, setErrorMsg] = useState<string>("");
@@ -40,13 +34,14 @@ export default function Demo() {
   const {
     cart,
     addToCart,
-    // updateCart,
+    updateCart,
     // removeFromCart,
     // updateCartProductQuantity,
-    // updateCartProductVariant,
   } = useCart();
 
-  const { checkout } = useCheckout(wagmiConfig as WagmiConfig, {
+  console.log("cart", cart);
+
+  const { checkout } = useCheckout(wagmiConfig, {
     buyer: address,
   });
 
@@ -55,12 +50,16 @@ export default function Demo() {
       if (!address || !product) return;
       console.log("adding product to cart", productId);
       try {
+        if (!cart) {
+          updateCart(cart);
+        }
         addToCart({
           product: {
             ...product,
             currency: product.currency.symbol || "USDC",
           },
           quantity: 1,
+          variantId: selectedVariant!,
         });
         setLocalCart([...localCart, product]);
       } catch (error) {
@@ -92,6 +91,7 @@ export default function Demo() {
   useEffect(() => {
     if (cart.length > 0) {
       try {
+        console.log("TRYING TO CHECKOUT");
         checkout();
       } catch (error) {
         console.error("error checking out", error);
@@ -168,50 +168,62 @@ export default function Demo() {
 
       <div className="flex flex-row justify-between w-full mb-4 px-2">
         <div
-          className="flex flex-col justify-left items-center gap-2 px-2"
+          className="flex flex-col justify-left items-center gap-8 px-2"
           key={product.dbId}
         >
           <ProductCarousel product={product} />
 
-          <div className="flex flex-col justify-left w-full gap-2">
-            <h2 className="text-xl font-bold">{product.name}</h2>
+          <div className="flex flex-col justify-left w-full gap-4">
+            <div className="flex flex-col gap-2">
+              <h2 className="text-xl font-bold">{product.name}</h2>
+              <ProductPrice product={product} />
+            </div>
 
-            <ProductPrice product={product} />
 
             <ProductVariants product={product} selectedVariant={selectedVariant} setSelectedVariant={setSelectedVariant} />
 
             <div className="flex flex-col justify-left w-full gap-2">
               <h2 className="text-xl justify-left font-bold">Description</h2>
-              {product.description.split("\n").map((line, index) => (
-                <p className="text-sm" key={`line-${index}`}>
-                  {line}
-                </p>
-              ))}
+              <div className="flex flex-col gap-2">
+                {product.description.split("\n").map((line, index) => (
+                  <p className="text-sm" key={`line-${index}`}>
+                    {line}
+                  </p>
+                ))}
+              </div>
             </div>
           </div>
 
           <div className="fixed bottom-[50px] left-0 right-0 flex justify-center z-50">
-            <Button
-              className="w-fit max-w-md bg-blue-500 hover:bg-blue-600 text-white text-lg font-bold px-8 py-6 rounded-xl shadow-lg"
-              onClick={() => {
-                if (localCart.find((p) => p.productId === product.dbId)) {
-                  completeCheckout(product.dbId);
-                } else {
-                  addProductToCart(product.dbId);
+            <div className="flex gap-4">
+              <Button
+                className="w-fit max-w-md bg-blue-500 hover:bg-blue-600 text-white text-lg font-bold px-8 py-6 rounded-xl shadow-lg"
+                onClick={() => {
+                  if (localCart.find((p) => p.productId === product.dbId)) {
+                    completeCheckout(product.dbId);
+                  } else {
+                    addProductToCart(product.dbId);
+                  }
+                }}
+                disabled={
+                  !selectedVariant &&
+                  (product.externalProduct?.providerVariants || []).length > 0
                 }
-              }}
-              disabled={
-                !selectedVariant &&
-                (product.externalProduct?.providerVariants || []).length > 0
-              }
-            >
-              {!selectedVariant &&
-                (product.externalProduct?.providerVariants || []).length > 0
-                ? "Select a variant"
-                : localCart.find((p) => p.productId === product.dbId)
-                  ? "Checkout"
-                  : "Add to cart"}
-            </Button>
+              >
+                {!selectedVariant &&
+                  (product.externalProduct?.providerVariants || []).length > 0
+                  ? "Select a variant"
+                  : localCart.find((p) => p.productId === product.dbId)
+                    ? "Checkout"
+                    : "Add to cart" + (cart.length > 0 ? " (" + (cart.length) + " items)" : "")}
+              </Button>
+              {cart.length > 0 && <Button
+                className="w-fit max-w-md bg-red-500 hover:bg-red-600 text-white text-lg font-bold px-8 py-6 rounded-xl shadow-lg"
+                onClick={() => updateCart([])}
+              >
+                Reset Cart
+              </Button>}
+            </div>
           </div>
         </div>
       </div>
