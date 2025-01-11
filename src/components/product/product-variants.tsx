@@ -19,7 +19,7 @@ export const ProductVariants: React.FC<ProductVariantsProps> = ({
     <div className="flex flex-col gap-2 w-full max-w-md mx-auto">
       <h2 className="text-lg font-semibold">Select Variant</h2>
       <div className="relative">
-        <div className="flex overflow-x-auto -mx-2 px-2 scrollbar-hide">
+        <div className="flex overflow-x-auto -mx-2 px-2 py-1 scrollbar-hide">
           {product.externalProduct?.providerVariants.map(
             (variant) => (
               <button

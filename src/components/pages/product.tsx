@@ -6,6 +6,6 @@ const Product = dynamic(() => import("@/components/product"), {
   ssr: false,
 });
 
-export default function App() {
+export default function ProductPage() {
   return <Product />;
 }

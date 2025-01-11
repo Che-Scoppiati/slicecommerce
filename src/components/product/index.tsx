@@ -12,12 +12,12 @@ import {
 } from "wagmi";
 import { Button } from "@/components/ui/button";
 import { ProductCart } from "@slicekit/core";
-import { ProductCarousel } from "./product/product-carousel";
-import { ProductVariants } from "./product/product-variants";
-import { Header } from "./header";
-import { ProductPrice } from "./product/product-price";
+import { ProductCarousel } from "./product-carousel";
+import { ProductVariants } from "./product-variants";
+import { Header } from "../header";
+import { ProductPrice } from "./product-price";
 
-export default function Demo() {
+export default function ProductPage() {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
   const [context, setContext] = useState<Context.FrameContext>();
 
@@ -166,14 +166,14 @@ export default function Demo() {
 
       <div className="text-red-500 text-lg">{errorMsg}</div>
 
-      <div className="flex flex-row justify-between w-full mb-4 px-2">
+      <div className="flex flex-row justify-between w-full px-2">
         <div
-          className="flex flex-col justify-left items-center gap-8 px-2"
+          className="flex flex-col justify-left items-center gap-8 px-2 pb-36"
           key={product.dbId}
         >
           <ProductCarousel product={product} />
 
-          <div className="flex flex-col justify-left w-full gap-4">
+          <div className="flex flex-col justify-left w-full gap-8">
             <div className="flex flex-col gap-2">
               <h2 className="text-xl font-bold">{product.name}</h2>
               <ProductPrice product={product} />
@@ -215,7 +215,7 @@ export default function Demo() {
                   ? "Select a variant"
                   : localCart.find((p) => p.productId === product.dbId)
                     ? "Checkout"
-                    : "Add to cart" + (cart.length > 0 ? " (" + (cart.length) + " items)" : "")}
+                    : "Add to Cart" + (cart.length > 0 ? " (" + (cart.length) + " items)" : "")}
               </Button>
               {cart.length > 0 && <Button
                 className="w-fit max-w-md bg-red-500 hover:bg-red-600 text-white text-lg font-bold px-8 py-6 rounded-xl shadow-lg"
