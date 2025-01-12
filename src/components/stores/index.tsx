@@ -52,21 +52,23 @@ export default function StoresPage() {
 
       <div className="grid grid-cols-2 gap-2 px-2">
         {stores.map((store) => (
-          <Link href={`stores/${store.id}`} key={store.id}>
-            <Card key={store.id}>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  {store.name}
-                  <a
-                    href={`https://explorer.com/address/${store.address}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <SquareArrowOutUpRight size={16} />
-                  </a>
-                </CardTitle>
+          <Card key={store.id}>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                {store.name}
+                <a
+                  href={`https://base.blockscout.com/address/${store.address}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <SquareArrowOutUpRight size={16} />
+                </a>
+              </CardTitle>
+              <Link href={`stores/${store.id}`} key={store.id}>
                 <CardDescription>{store.description}</CardDescription>
-              </CardHeader>
+              </Link>
+            </CardHeader>
+            <Link href={`stores/${store.id}`} key={store.id}>
               <CardContent>
                 <Image
                   src={store.image ?? "/default-image.png"}
@@ -76,8 +78,8 @@ export default function StoresPage() {
                   className="w-full h-auto bg-gray-300 rounded-md"
                 />
               </CardContent>
-            </Card>
-          </Link>
+            </Link>
+          </Card>
         ))}
       </div>
     </div>
