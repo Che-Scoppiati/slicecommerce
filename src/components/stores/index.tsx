@@ -11,6 +11,7 @@ import Image from "next/image";
 import { SquareArrowOutUpRight } from "lucide-react";
 import Link from "next/link";
 import { useFrameContext } from "@/hooks/frame-context";
+import { Header } from "../header";
 
 export default function StoresPage() {
   const { isSDKLoaded, context } = useFrameContext();
@@ -46,41 +47,51 @@ export default function StoresPage() {
         paddingRight: context?.client.safeAreaInsets?.right ?? 0,
       }}
     >
-      <h1 className="px-2 py-4 text-lg font-bold">Your Stores</h1>
+      <Header
+        title="Slice Commerce"
+        user={{
+          pfp: context?.user.pfpUrl,
+          username: context?.user.username,
+        }}
+      />
 
-      {storesAreLoading && <div className="px-2 py-4">Loading...</div>}
+      <div className="p-4">
+        <h1 className="text-lg font-bold mb-4">Stores</h1>
 
-      <div className="grid grid-cols-2 gap-2 px-2">
-        {stores.map((store) => (
-          <Card key={store.id}>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                {store.name}
-                <a
-                  href={`https://base.blockscout.com/address/${store.address}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <SquareArrowOutUpRight size={16} />
-                </a>
-              </CardTitle>
+        {storesAreLoading && <div className="py-4">Loading...</div>}
+
+        <div className="grid grid-cols-2 gap-2 px-2">
+          {stores.map((store) => (
+            <Card key={store.id}>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  {store.name}
+                  <a
+                    href={`https://base.blockscout.com/address/${store.address}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <SquareArrowOutUpRight size={16} />
+                  </a>
+                </CardTitle>
+                <Link href={`stores/${store.id}`} key={store.id}>
+                  <CardDescription>{store.description}</CardDescription>
+                </Link>
+              </CardHeader>
               <Link href={`stores/${store.id}`} key={store.id}>
-                <CardDescription>{store.description}</CardDescription>
+                <CardContent>
+                  <Image
+                    src={store.image ?? "/default-image.png"}
+                    alt={store.name}
+                    width={400}
+                    height={400}
+                    className="w-full h-auto bg-gray-300 rounded-md"
+                  />
+                </CardContent>
               </Link>
-            </CardHeader>
-            <Link href={`stores/${store.id}`} key={store.id}>
-              <CardContent>
-                <Image
-                  src={store.image ?? "/default-image.png"}
-                  alt={store.name}
-                  width={400}
-                  height={400}
-                  className="w-full h-auto bg-gray-300 rounded-md"
-                />
-              </CardContent>
-            </Link>
-          </Card>
-        ))}
+            </Card>
+          ))}
+        </div>
       </div>
     </div>
   );

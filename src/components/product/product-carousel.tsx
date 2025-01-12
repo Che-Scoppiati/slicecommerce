@@ -16,7 +16,7 @@ interface ProductCarouselProps {
 }
 
 export const ProductCarousel: React.FC<ProductCarouselProps> = ({
-  product
+  product,
 }) => {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState<number>(0);
@@ -37,7 +37,7 @@ export const ProductCarousel: React.FC<ProductCarouselProps> = ({
 
   return (
     <div className="flex flex-col items-center gap-2 w-full mx-auto">
-      <Carousel className="w-[80%]" setApi={setApi}>
+      <Carousel className="w-[74%]" setApi={setApi}>
         <CarouselContent>
           {product.images.map((image, index) => (
             <CarouselItem key={index}>
@@ -60,5 +60,5 @@ export const ProductCarousel: React.FC<ProductCarouselProps> = ({
         Image {current} of {count}
       </div>
     </div>
-  )
-}
+  );
+};

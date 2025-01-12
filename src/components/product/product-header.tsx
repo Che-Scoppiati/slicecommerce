@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "next/link";
 import Image from "next/image";
 
 interface ProductHeaderProps {
@@ -10,7 +10,7 @@ interface ProductHeaderProps {
 export const ProductHeader: React.FC<ProductHeaderProps> = ({
   username,
   slicerName,
-  pfpUrl
+  pfpUrl,
 }) => {
   return (
     <div className="flex flex-row justify-between w-full mb-4 px-2 py-4">
@@ -34,5 +34,5 @@ export const ProductHeader: React.FC<ProductHeaderProps> = ({
         </div>
       )}
     </div>
-  )
-}
+  );
+};

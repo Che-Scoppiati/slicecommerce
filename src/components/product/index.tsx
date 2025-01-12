@@ -1,25 +1,19 @@
 "use client";
 
 import { useEffect, useCallback, useState } from "react";
-import sdk, {
-  type Context,
-} from "@farcaster/frame-sdk";
-import { createStore } from "mipd";
 import { config as wagmiConfig } from "@/lib/wagmi";
 import { useCart, useCheckout } from "@slicekit/react";
-import {
-  useAccount,
-} from "wagmi";
+import { useAccount } from "wagmi";
 import { Button } from "@/components/ui/button";
 import { ProductCart } from "@slicekit/core";
 import { ProductCarousel } from "./product-carousel";
 import { ProductVariants } from "./product-variants";
-import { ProductHeader } from "./product-header";
 import { ProductPrice } from "./product-price";
+import { Header } from "../header";
+import { useFrameContext } from "@/hooks/frame-context";
 
 export default function ProductPage() {
-  const [isSDKLoaded, setIsSDKLoaded] = useState(false);
-  const [context, setContext] = useState<Context.FrameContext>();
+  const { isSDKLoaded, context } = useFrameContext();
 
   const [product, setProduct] = useState<ProductCart>();
   const [, setIsProductsLoading] = useState(false);
@@ -28,6 +22,7 @@ export default function ProductPage() {
   const [localCart, setLocalCart] = useState<ProductCart[]>([]);
 
   const [errorMsg, setErrorMsg] = useState<string>("");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [slicerId, setSlicerId] = useState(2006);
 
   const { address } = useAccount();
@@ -70,7 +65,7 @@ export default function ProductPage() {
         );
       }
     },
-    [addToCart, address, localCart, product]
+    [addToCart, address, cart, localCart, product, selectedVariant, updateCart]
   );
 
   const completeCheckout = useCallback(
@@ -103,44 +98,19 @@ export default function ProductPage() {
     }
   }, [checkout, cart]);
 
-  useEffect(() => {
-    const load = async () => {
-      const context = await sdk.context;
-      setContext(context);
-
-      console.log("Calling ready");
-      sdk.actions.ready({});
-
-      // Set up a MIPD Store, and request Providers.
-      const store = createStore();
-
-      // Subscribe to the MIPD Store.
-      store.subscribe((providerDetails) => {
-        console.log("PROVIDER DETAILS", providerDetails);
-        // => [EIP6963ProviderDetail, EIP6963ProviderDetail, ...]
-      });
-    };
-    if (sdk && !isSDKLoaded) {
-      console.log("Calling load");
-      setIsSDKLoaded(true);
-      load();
-      return () => {
-        sdk.removeAllListeners();
-      };
-    }
-  }, [isSDKLoaded]);
-
   const fetchProducts = useCallback(async () => {
     setIsProductsLoading(true);
     try {
-      const response = await fetch(`/api/slice?slicerId=${slicerId}&buyer=${address}&isOnsite=false`);
+      const response = await fetch(
+        `/api/slice?slicerId=${slicerId}&buyer=${address}&isOnsite=false`
+      );
       const { data } = await response.json();
       console.log("frame products data", data);
       setProduct(data[0]);
     } finally {
       setIsProductsLoading(false);
     }
-  }, [setIsProductsLoading, setProduct]);
+  }, [address, slicerId]);
 
   useEffect(() => {
     fetchProducts();
@@ -163,11 +133,18 @@ export default function ProductPage() {
         paddingRight: context?.client.safeAreaInsets?.right ?? 0,
       }}
     >
-      <ProductHeader username={context?.user.username} slicerName={product?.slicerName} pfpUrl={context?.user.pfpUrl} />
+      <Header
+        title={product.slicerName || "Slice Commerce"}
+        user={{
+          pfp: context?.user.pfpUrl,
+          username: context?.user.username,
+        }}
+        slicer={{ name: product.slicerName || "Slicer", id: slicerId }}
+      />
 
-      <div className="text-red-500 text-lg">{errorMsg}</div>
+      <div className="text-red-500 text-lg my-4">{errorMsg}</div>
 
-      <div className="flex flex-row justify-between w-full px-2">
+      <div className="flex flex-row justify-between w-full p-4">
         <div
           className="flex flex-col justify-left items-center gap-8 px-2 pb-36"
           key={product.dbId}
@@ -180,8 +157,11 @@ export default function ProductPage() {
               <ProductPrice product={product} />
             </div>
 
-
-            <ProductVariants product={product} selectedVariant={selectedVariant} setSelectedVariant={setSelectedVariant} />
+            <ProductVariants
+              product={product}
+              selectedVariant={selectedVariant}
+              setSelectedVariant={setSelectedVariant}
+            />
 
             <div className="flex flex-col justify-left w-full gap-2">
               <h2 className="text-xl justify-left font-bold">Description</h2>
@@ -212,18 +192,21 @@ export default function ProductPage() {
                 }
               >
                 {!selectedVariant &&
-                  (product.externalProduct?.providerVariants || []).length > 0
+                (product.externalProduct?.providerVariants || []).length > 0
                   ? "Select a variant"
                   : localCart.find((p) => p.productId === product.dbId)
-                    ? "Checkout"
-                    : "Add to Cart" + (cart.length > 0 ? " (" + (cart.length) + " items)" : "")}
+                  ? "Checkout"
+                  : "Add to Cart" +
+                    (cart.length > 0 ? " (" + cart.length + " items)" : "")}
               </Button>
-              {cart.length > 0 && <Button
-                className="w-fit max-w-md bg-red-500 hover:bg-red-600 text-white text-lg font-bold px-8 py-6 rounded-xl shadow-lg"
-                onClick={() => updateCart([])}
-              >
-                Reset Cart
-              </Button>}
+              {cart.length > 0 && (
+                <Button
+                  className="w-fit max-w-md bg-red-500 hover:bg-red-600 text-white text-lg font-bold px-8 py-6 rounded-xl shadow-lg"
+                  onClick={() => updateCart([])}
+                >
+                  Reset Cart
+                </Button>
+              )}
             </div>
           </div>
         </div>
