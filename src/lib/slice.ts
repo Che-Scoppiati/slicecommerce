@@ -22,8 +22,8 @@ async function getSliceStores() {
 
 async function getSliceStoreProducts(
   sliderId: number,
-  buyer: string,
-  isOnsite: boolean
+  buyer?: string,
+  isOnsite?: boolean
 ) {
   const { cartProducts, storeClosed } = await getStoreProducts(
     wagmiConfig as WagmiConfig,

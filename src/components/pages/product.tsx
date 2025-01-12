@@ -6,6 +6,12 @@ const Product = dynamic(() => import("@/components/product"), {
   ssr: false,
 });
 
-export default function ProductPage() {
-  return <Product />;
+export default function ProductPage({
+  productName,
+  storeName,
+}: {
+  productName: string;
+  storeName: string;
+}) {
+  return <Product productName={productName} storeName={storeName} />;
 }

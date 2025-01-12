@@ -1,15 +1,11 @@
 "use client";
 
-import { useEffect, useCallback, useState } from "react";
-import sdk, {
-  type Context,
-} from "@farcaster/frame-sdk";
+import { useEffect, useCallback, useState, FC } from "react";
+import sdk, { type Context } from "@farcaster/frame-sdk";
 import { createStore } from "mipd";
 import { config as wagmiConfig } from "@/lib/wagmi";
 import { useCart, useCheckout } from "@slicekit/react";
-import {
-  useAccount,
-} from "wagmi";
+import { useAccount } from "wagmi";
 import { Button } from "@/components/ui/button";
 import { ProductCart } from "@slicekit/core";
 import { ProductCarousel } from "./product-carousel";
@@ -17,18 +13,26 @@ import { ProductVariants } from "./product-variants";
 import { ProductHeader } from "./product-header";
 import { ProductPrice } from "./product-price";
 
-export default function ProductPage() {
+import { Product as DbProduct } from "@/schemas/db.schema";
+
+interface ProductProps {
+  productName: string;
+  storeName: string;
+}
+
+const Product: FC<ProductProps> = ({ productName, storeName }) => {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
   const [context, setContext] = useState<Context.FrameContext>();
 
   const [product, setProduct] = useState<ProductCart>();
   const [, setIsProductsLoading] = useState(false);
+  const [dbProduct, setDbProduct] = useState<DbProduct>();
 
   const [selectedVariant, setSelectedVariant] = useState<number | null>(null);
   const [localCart, setLocalCart] = useState<ProductCart[]>([]);
 
   const [errorMsg, setErrorMsg] = useState<string>("");
-  const [slicerId, setSlicerId] = useState(2006);
+  const [slicerId] = useState(2006);
 
   const { address } = useAccount();
 
@@ -133,18 +137,53 @@ export default function ProductPage() {
   const fetchProducts = useCallback(async () => {
     setIsProductsLoading(true);
     try {
-      const response = await fetch(`/api/slice?slicerId=${slicerId}&buyer=${address}&isOnsite=false`);
+      const response = await fetch(
+        `/api/slice?slicerId=${slicerId}&buyer=${address}&isOnsite=false`
+      );
       const { data } = await response.json();
       console.log("frame products data", data);
       setProduct(data[0]);
+    } catch (error) {
+      console.error("error fetching products", error);
+      setErrorMsg(
+        "Error fetching products" +
+          (error instanceof Error ? error.message : "")
+      );
     } finally {
       setIsProductsLoading(false);
     }
-  }, [setIsProductsLoading, setProduct]);
+  }, [address, slicerId]);
+
+  const fetchProductByName = useCallback(async () => {
+    try {
+      const response = await fetch(
+        `/api/db?slicerName=${storeName}&productName=${productName}`
+      );
+      const { data } = await response.json();
+      console.log("db product get", data);
+      setDbProduct(data);
+    } catch (error) {
+      console.error("error fetching product by name", error);
+      setErrorMsg(
+        "Error fetching product by name" +
+          (error instanceof Error ? error.message : "")
+      );
+    }
+  }, [storeName, productName]);
+
+  useEffect(() => {
+    if (product) {
+      fetchProducts();
+    }
+  }, [fetchProducts, product]);
 
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
+
+  useEffect(() => {
+    fetchProductByName();
+  }, [fetchProductByName]);
 
   if (!isSDKLoaded) {
     return <div>Loading...</div>;
@@ -153,6 +192,8 @@ export default function ProductPage() {
   if (!product) {
     return <div>Loading...</div>;
   }
+
+  console.log("dbProduct", dbProduct);
 
   return (
     <div
@@ -163,7 +204,11 @@ export default function ProductPage() {
         paddingRight: context?.client.safeAreaInsets?.right ?? 0,
       }}
     >
-      <ProductHeader username={context?.user.username} slicerName={product?.slicerName} pfpUrl={context?.user.pfpUrl} />
+      <ProductHeader
+        username={context?.user.username}
+        slicerName={product?.slicerName}
+        pfpUrl={context?.user.pfpUrl}
+      />
 
       <div className="text-red-500 text-lg">{errorMsg}</div>
 
@@ -180,8 +225,11 @@ export default function ProductPage() {
               <ProductPrice product={product} />
             </div>
 
-
-            <ProductVariants product={product} selectedVariant={selectedVariant} setSelectedVariant={setSelectedVariant} />
+            <ProductVariants
+              product={product}
+              selectedVariant={selectedVariant}
+              setSelectedVariant={setSelectedVariant}
+            />
 
             <div className="flex flex-col justify-left w-full gap-2">
               <h2 className="text-xl justify-left font-bold">Description</h2>
@@ -212,22 +260,27 @@ export default function ProductPage() {
                 }
               >
                 {!selectedVariant &&
-                  (product.externalProduct?.providerVariants || []).length > 0
+                (product.externalProduct?.providerVariants || []).length > 0
                   ? "Select a variant"
                   : localCart.find((p) => p.productId === product.dbId)
-                    ? "Checkout"
-                    : "Add to Cart" + (cart.length > 0 ? " (" + (cart.length) + " items)" : "")}
+                  ? "Checkout"
+                  : "Add to Cart" +
+                    (cart.length > 0 ? " (" + cart.length + " items)" : "")}
               </Button>
-              {cart.length > 0 && <Button
-                className="w-fit max-w-md bg-red-500 hover:bg-red-600 text-white text-lg font-bold px-8 py-6 rounded-xl shadow-lg"
-                onClick={() => updateCart([])}
-              >
-                Reset Cart
-              </Button>}
+              {cart.length > 0 && (
+                <Button
+                  className="w-fit max-w-md bg-red-500 hover:bg-red-600 text-white text-lg font-bold px-8 py-6 rounded-xl shadow-lg"
+                  onClick={() => updateCart([])}
+                >
+                  Reset Cart
+                </Button>
+              )}
             </div>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default Product;

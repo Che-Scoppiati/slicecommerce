@@ -1,14 +1,14 @@
-import { getSliceStoreProducts } from "@/lib/slice";
 import { NextRequest } from "next/server";
+
+import { getProductByName } from "@/lib/db";
 
 export async function GET(request: NextRequest): Promise<Response> {
   try {
     const url = new URL(request.url);
-    const slicerId = url.searchParams.get("slicerId");
-    const buyer = url.searchParams.get("buyer");
-    const isOnsite = url.searchParams.get("isOnsite") === "true";
+    const slicerName = url.searchParams.get("slicerName");
+    const productName = url.searchParams.get("productName");
 
-    if (!slicerId || !buyer) {
+    if (!slicerName || !productName) {
       return new Response(undefined, {
         status: 400,
         headers: {
@@ -17,16 +17,11 @@ export async function GET(request: NextRequest): Promise<Response> {
       });
     }
 
-    const { cartProducts } = await getSliceStoreProducts(
-      Number(slicerId),
-      buyer,
-      isOnsite
-    );
-    console.log("cartProducts", cartProducts);
+    const product = await getProductByName(slicerName, productName);
 
-    console.log("cartProducts", cartProducts);
+    console.log("db product", product);
 
-    if (!cartProducts) {
+    if (!product) {
       return new Response(undefined, {
         status: 404,
         headers: {
@@ -35,7 +30,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       });
     }
     return Response.json(
-      { status: "ok", data: cartProducts },
+      { status: "ok", data: product },
       {
         status: 200,
       }

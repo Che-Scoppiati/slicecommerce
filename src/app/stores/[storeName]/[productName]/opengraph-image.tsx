@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { env } from "@/lib/env";
-import { getSliceStoreProducts } from "@/lib/slice";
+import { getProductByName } from "@/lib/db";
 import { ImageResponse } from "next/og";
 export const dynamic = "force-dynamic";
 
@@ -29,12 +28,22 @@ async function loadGoogleFont(font: string) {
   throw new Error("failed to load font data");
 }
 
-export default async function Image() {
+export default async function Image({
+  params,
+}: {
+  params: Promise<{ storeName: string; productName: string }>;
+}) {
   try {
-    const { cartProducts } = await getSliceStoreProducts(env.SLICE_STORE_ID);
-    const product = cartProducts[0];
+    const { storeName, productName } = await params;
+    const product = await getProductByName(storeName, productName);
+    if (!product) {
+      return new Response(`Product not found`, {
+        status: 404,
+      });
+    }
+
     const productPrice =
-      Number(product.price) / 10 ** (product.currency.decimals || 6);
+      Number(product.price) / 10 ** (product.currencyDecimals || 6);
 
     console.log(productPrice, product.images[0]);
 
@@ -73,7 +82,7 @@ export default async function Image() {
                   marginTop: "-10px",
                 }}
               >
-                <h1 tw="font-bold text-center text-xl px-4 py-1 my-0">{`${productPrice} ${product.currency.symbol}`}</h1>
+                <h1 tw="font-bold text-center text-xl px-4 py-1 my-0">{`${productPrice} ${product.currencySymbol}`}</h1>
               </div>
             </div>
           </div>

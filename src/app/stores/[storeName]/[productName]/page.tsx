@@ -27,6 +27,7 @@ export async function generateMetadata({
   params: Promise<{ storeName: string; productName: string }>;
 }): Promise<Metadata> {
   const { storeName, productName } = await params;
+
   return {
     title: "Farcaster Frames v2 Demo",
     openGraph: {
@@ -39,6 +40,11 @@ export async function generateMetadata({
   };
 }
 
-export default function ProductPage() {
-  return <Product />;
+export default async function ProductPage({
+  params,
+}: {
+  params: Promise<{ storeName: string; productName: string }>;
+}) {
+  const { storeName, productName } = await params;
+  return <Product productName={productName} storeName={storeName} />;
 }

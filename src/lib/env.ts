@@ -7,6 +7,8 @@ const envSchema = z.object({
   NEXT_PUBLIC_URL: z.string().url(),
   SLICE_STORE_ID: z.coerce.number().min(1),
   THEGRAPH_API_KEY: z.string().optional(),
+  TURSO_DATABASE_URL: z.string().url(),
+  TURSO_AUTH_TOKEN: z.string(),
 });
 
 const { data, success, error } = envSchema.safeParse(process.env);
