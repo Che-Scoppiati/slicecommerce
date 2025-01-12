@@ -28,6 +28,7 @@ export default function ProductPage() {
   const [localCart, setLocalCart] = useState<ProductCart[]>([]);
 
   const [errorMsg, setErrorMsg] = useState<string>("");
+  const [slicerId, setSlicerId] = useState(2006);
 
   const { address } = useAccount();
 
@@ -132,7 +133,7 @@ export default function ProductPage() {
   const fetchProducts = useCallback(async () => {
     setIsProductsLoading(true);
     try {
-      const response = await fetch("/api/slice");
+      const response = await fetch(`/api/slice?slicerId=${slicerId}&buyer=${address}&isOnsite=false`);
       const { data } = await response.json();
       console.log("frame products data", data);
       setProduct(data[0]);

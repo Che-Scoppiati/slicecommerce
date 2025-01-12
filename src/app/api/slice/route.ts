@@ -1,9 +1,27 @@
 import { getSliceStoreProducts } from "@/lib/slice";
+import { NextRequest } from "next/server";
 
-export async function GET(): Promise<Response> {
+export async function GET(
+  request: NextRequest,
+): Promise<Response> {
   try {
-    const { cartProducts } = await getSliceStoreProducts(undefined, undefined);
-    // console.log("cartProducts", cartProducts);
+    const url = new URL(request.url);
+    const slicerId = url.searchParams.get("slicerId")
+    const buyer = url.searchParams.get("buyer");
+    const isOnsite = url.searchParams.get("isOnsite") === "true";
+
+    if (!slicerId || !buyer) {
+      return new Response(undefined, {
+        status: 400,
+        headers: {
+          "Cache-Control": "no-store",
+        },
+      });
+    }
+
+    const { cartProducts } = await getSliceStoreProducts(Number(slicerId), buyer, isOnsite);
+
+    console.log("cartProducts", cartProducts)
 
     if (!cartProducts) {
       return new Response(undefined, {

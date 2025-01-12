@@ -21,14 +21,15 @@ async function getSliceStores() {
 }
 
 async function getSliceStoreProducts(
-  buyer: `0x${string}` | undefined = undefined,
-  isOnsite: boolean | undefined = undefined
+  sliderId: number,
+  buyer: string,
+  isOnsite: boolean
 ) {
   const { cartProducts, storeClosed } = await getStoreProducts(
     wagmiConfig as WagmiConfig,
     {
-      slicerId: env.SLICE_STORE_ID,
-      buyer: buyer, // Address of the buyer, used to determine eventual discounts. If not provided, base prices are returned.
+      slicerId: sliderId,
+      buyer: buyer as `0x${string}`, // Address of the buyer, used to determine eventual discounts. If not provided, base prices are returned.
       isOnsite: isOnsite,
     }
   );

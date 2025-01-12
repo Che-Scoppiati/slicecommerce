@@ -5,28 +5,38 @@ import { Card, CardContent, CardFooter } from "../ui/card";
 import Link from "next/link";
 import { formatPrice } from "@/lib/price";
 import { useFrameContext } from "@/hooks/frame-context";
+import { useAccount } from "wagmi";
 
 export default function StorePage() {
   const { isSDKLoaded, context } = useFrameContext();
   const [products, setProducts] = useState<ProductCart[]>();
-
+  const [slicerId, setSlicerId] = useState<number>(2006);
   const [isProductsLoading, setIsProductsLoading] = useState(false);
+  const { address } = useAccount();
 
   const fetchProducts = useCallback(async () => {
     setIsProductsLoading(true);
     try {
-      const response = await fetch("/api/slice");
+      const response = await fetch(`/api/slice?slicerId=${slicerId}&buyer=${address}&isOnsite=false`);
       const { data } = await response.json();
       console.log("frame products data", data);
       setProducts(data);
     } finally {
       setIsProductsLoading(false);
     }
-  }, [setIsProductsLoading, setProducts]);
+  }, [setIsProductsLoading, setProducts, slicerId]);
 
   useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+    if (slicerId && address) {
+      fetchProducts();
+    }
+  }, [fetchProducts, slicerId, address]);
+
+  useEffect(() => {
+    if (products && products[0]) {
+      setSlicerId(products[0].slicerId);
+    }
+  }, [products]);
 
   console.log({
     isSDKLoaded,
