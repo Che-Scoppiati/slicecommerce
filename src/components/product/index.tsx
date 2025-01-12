@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { ProductCart } from "@slicekit/core";
 import { ProductCarousel } from "./product-carousel";
 import { ProductVariants } from "./product-variants";
-import { Header } from "../header";
+import { ProductHeader } from "./product-header";
 import { ProductPrice } from "./product-price";
 
 export default function ProductPage() {
@@ -162,7 +162,7 @@ export default function ProductPage() {
         paddingRight: context?.client.safeAreaInsets?.right ?? 0,
       }}
     >
-      <Header username={context?.user.username} slicerName={product?.slicerName} pfpUrl={context?.user.pfpUrl} />
+      <ProductHeader username={context?.user.username} slicerName={product?.slicerName} pfpUrl={context?.user.pfpUrl} />
 
       <div className="text-red-500 text-lg">{errorMsg}</div>
 

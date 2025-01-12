@@ -1,13 +1,13 @@
 import Link from "next/link"
 import Image from "next/image";
 
-interface HeaderProps {
+interface ProductHeaderProps {
   username: string | undefined;
   slicerName: string | undefined;
   pfpUrl: string | undefined;
 }
 
-export const Header: React.FC<HeaderProps> = ({
+export const ProductHeader: React.FC<ProductHeaderProps> = ({
   username,
   slicerName,
   pfpUrl
