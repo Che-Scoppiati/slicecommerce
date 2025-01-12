@@ -1,0 +1,18 @@
+{
+  "accountAssociation": {
+    "header": "eyJmaWQiOjI2MjgwMCwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDEwN2IyYzM1MEEzRDMxZDUzYTFGNzY1ODU0NUU4ZEIxNTBEMGQ5RTQifQ",
+    "payload": "eyJkb21haW4iOiJzZXR0bGVkLWFsaXZlLWthdHlkaWQubmdyb2stZnJlZS5hcHAifQ",
+    "signature": "MHgxYWY1NDY5ODBhNTAxNzFkOTZlYTE0NDhkY2Q2ZDBlNGM5Zjg0NDU2NjczZmI2MzQ1NmYwOWU0ODQxMzkxNzdmNmRiYjMxNjhhZDFmMDM5MzUwYzcwMmE3ODA2ZjkxNGNjZmM1ZTAyNWE1NDA5ZDFiYWZkMmEwZWViOWUzY2NhNzFi"
+  },
+  "frame": {
+    "version": "1",
+    "name": "Slice Commerce",
+    "iconUrl": "https://settled-alive-katydid.ngrok-free.app/images/logo-slice.png",
+    "homeUrl": "https://settled-alive-katydid.ngrok-free.app",
+    "imageUrl": "https://settled-alive-katydid.ngrok-free.app/images/logo-slice.png",
+    "buttonTitle": "Slice Commerce",
+    "splashImageUrl": "https://settled-alive-katydid.ngrok-free.app/images/logo-slice.png",
+    "splashBackgroundColor": "#eeccff",
+    "webhookUrl": "https://settled-alive-katydid.ngrok-free.app/api/webhook"
+  }
+}

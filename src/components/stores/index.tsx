@@ -1,47 +1,21 @@
 import { useCallback, useEffect, useState } from "react";
-import sdk, {
-  type Context,
-} from "@farcaster/frame-sdk";
-import { createStore } from "mipd";
 import { SlicerBasics } from "@slicekit/core";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
 import Image from "next/image";
 import { SquareArrowOutUpRight } from "lucide-react";
 import Link from "next/link";
+import { useFrameContext } from "@/hooks/frame-context";
 
 export default function StoresPage() {
-
-  const [context, setContext] = useState<Context.FrameContext>();
-  const [isSDKLoaded, setIsSDKLoaded] = useState(false);
+  const { isSDKLoaded, context } = useFrameContext();
   const [storesAreLoading, setStoresAreLoading] = useState(false);
   const [stores, setStores] = useState<SlicerBasics[]>([]);
-
-  useEffect(() => {
-    const load = async () => {
-      const context = await sdk.context;
-      setContext(context);
-
-      console.log("Calling ready");
-      sdk.actions.ready({});
-
-      // Set up a MIPD Store, and request Providers.
-      const store = createStore();
-
-      // Subscribe to the MIPD Store.
-      store.subscribe((providerDetails) => {
-        console.log("PROVIDER DETAILS", providerDetails);
-        // => [EIP6963ProviderDetail, EIP6963ProviderDetail, ...]
-      });
-    };
-    if (sdk && !isSDKLoaded) {
-      console.log("Calling load");
-      setIsSDKLoaded(true);
-      load();
-      return () => {
-        sdk.removeAllListeners();
-      };
-    }
-  }, [isSDKLoaded]);
 
   const fetchStores = useCallback(async () => {
     setStoresAreLoading(true);
@@ -59,6 +33,10 @@ export default function StoresPage() {
     fetchStores();
   }, [fetchStores]);
 
+  if (!isSDKLoaded) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div
       style={{
@@ -74,12 +52,16 @@ export default function StoresPage() {
 
       <div className="grid grid-cols-2 gap-2 px-2">
         {stores.map((store) => (
-          <Link href={`/${store.name}`} key={store.id}>
+          <Link href={`stores/${store.id}`} key={store.id}>
             <Card key={store.id}>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   {store.name}
-                  <a href={`https://explorer.com/address/${store.address}`} target="_blank" rel="noopener noreferrer">
+                  <a
+                    href={`https://explorer.com/address/${store.address}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <SquareArrowOutUpRight size={16} />
                   </a>
                 </CardTitle>
@@ -99,5 +81,5 @@ export default function StoresPage() {
         ))}
       </div>
     </div>
-  )
+  );
 }

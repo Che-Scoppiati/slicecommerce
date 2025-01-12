@@ -1,32 +1,16 @@
-import sdk, { Context } from "@farcaster/frame-sdk";
 import { ProductCart } from "@slicekit/core";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { Card, CardContent, CardFooter } from "../ui/card";
 import Link from "next/link";
 import { formatPrice } from "@/lib/price";
+import { useFrameContext } from "@/hooks/frame-context";
 
 export default function StorePage() {
-  const [isSDKLoaded, setIsSDKLoaded] = useState(false);
-  const [context, setContext] = useState<Context.FrameContext>();
+  const { isSDKLoaded, context } = useFrameContext();
   const [products, setProducts] = useState<ProductCart[]>();
 
   const [isProductsLoading, setIsProductsLoading] = useState(false);
-
-  useEffect(() => {
-    const load = async () => {
-      const context = await sdk.context;
-      setContext(context);
-
-      console.log("Calling ready");
-      sdk.actions.ready();
-    };
-    if (sdk && !isSDKLoaded) {
-      console.log("Calling load");
-      setIsSDKLoaded(true);
-      load();
-    }
-  }, [isSDKLoaded]);
 
   const fetchProducts = useCallback(async () => {
     setIsProductsLoading(true);
@@ -73,7 +57,10 @@ export default function StorePage() {
 
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {products?.map((product) => (
-          <Link href={`/store/${product.name}`} key={product.productId}>
+          <Link
+            href={`/stores/${product.slicerId}/${product.productId}`}
+            key={product.productId}
+          >
             <Card className="overflow-hidden">
               <CardContent className="p-4 pb-0">
                 <div className="aspect-w-16 aspect-h-9">

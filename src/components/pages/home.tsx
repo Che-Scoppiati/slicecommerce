@@ -2,12 +2,10 @@
 
 import dynamic from "next/dynamic";
 
-const Stores = dynamic(() => import("@/components/stores"), {
+const Home = dynamic(() => import("@/components/home"), {
   ssr: false,
 });
 
 export default function HomePage() {
-  return (
-    <Stores />
-  );
+  return <Home />;
 }
